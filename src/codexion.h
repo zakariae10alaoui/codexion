@@ -24,7 +24,9 @@ typedef struct args
 
 typedef struct s_dongle
 {
-    pthread_mutex_t	mutex;          
+    pthread_mutex_t	mutex;      
+    int is_free;   
+    int in_cooldown; 
     long long		last_released;  
 }	s_dongle;
 
@@ -57,6 +59,7 @@ typedef struct s_sim
     pthread_mutex_t	sim_lock; 
                      
     int				simulation_ended; 
+    long long       start_time;
     int				locks_ready;         
 }	s_sim;
 

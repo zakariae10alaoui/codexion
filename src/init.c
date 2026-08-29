@@ -12,6 +12,8 @@ s_dongle *init_dongle(int nmb)
     while (i < nmb)
     {
         dongles[i].last_released = 0;
+        dongles[i].is_free = 1;
+        dongles[i].in_cooldown = 0;
         if (pthread_mutex_init(&dongles[i].mutex, NULL) != 0)
         {
             return NULL;
