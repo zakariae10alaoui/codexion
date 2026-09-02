@@ -64,12 +64,6 @@ typedef struct s_sim
     int				locks_ready;         
 }	s_sim;
 
-typedef struct s_task
-{
-    int coder_id;
-    long long arrival_time;
-    long long deadline;
-}s_task;
 
 s_args *parser(char **argv);
 s_sim *fill_it(s_args *args);
@@ -81,5 +75,6 @@ void refactor(s_coder *coder);
 long long get_time();
 void *monitor_routine(void *arg);
 void init_start_time(s_sim *data);
+void fill_dongles(s_coder *coder,s_sim *sim);
 
 #endif

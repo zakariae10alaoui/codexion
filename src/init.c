@@ -35,7 +35,7 @@ s_coder *init_coder(int nmb, s_sim *sim)
     while (i < nmb)
     {
         coders[i].id = i + 1;
-        fill_dongles
+        fill_dongles(&coders[i],sim);
         coders[i].compiles_done = 0;
         coders[i].last_compile_start = 0;
         coders[i].sim = sim;

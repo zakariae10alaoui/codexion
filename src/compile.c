@@ -12,20 +12,17 @@ void take_single_dongle(s_dongle *dongle,int id)
 }
 int take_dongles(s_coder *coder)
 {
+ 
   
-    
-    take_single_dongle(coder->left_dongle ,coder->id);
-    take_single_dongle(coder->right_dongle, coder->id);
-    
 }
 
 void compile(s_coder *coder)
 {
-    
     take_dongles(coder);
     pthread_mutex_lock(&coder->sim->sim_lock);
-    coder->last_compile_start = get_time();
     print_log(coder->sim, coder->id, "is compiling");
+    coder->last_compile_start = get_time() + coder->sim->time_to_compile;
+    coder->compiles_done += 1;
     pthread_mutex_unlock(&coder->sim->sim_lock);
     usleep(coder->sim->time_to_compile * 1000);
 }
