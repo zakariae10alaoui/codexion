@@ -34,8 +34,8 @@ typedef struct s_coder
 {
     int				id;               
     pthread_t		thread;            
-    pthread_mutex_t	*left_dongle;      
-    pthread_mutex_t	*right_dongle;      
+    pthread_mutex_t	*first_dongle;      
+    pthread_mutex_t	*second_dongle;      
     int				compiles_done;     
     long long		last_compile_start; 
     struct s_sim	*sim;               
@@ -44,7 +44,7 @@ typedef struct s_coder
 typedef struct s_sim
 {
     int				number_of_coders;          
-    long long		time_to_burnout;           
+    long long		time_to_burnout; 
     long long		time_to_compile;           
     long long		time_to_debug;             
     long long		time_to_refactor;          
@@ -59,6 +59,7 @@ typedef struct s_sim
     pthread_mutex_t	sim_lock; 
                      
     int				simulation_ended; 
+    int             all_ready;
     long long       start_time;
     int				locks_ready;         
 }	s_sim;
@@ -78,5 +79,7 @@ void compile(s_coder *coder);
 void debuge(s_coder *coder);
 void refactor(s_coder *coder);
 long long get_time();
+void *monitor_routine(void *arg);
+void init_start_time(s_sim *data);
 
 #endif

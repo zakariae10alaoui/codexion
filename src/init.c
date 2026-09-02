@@ -35,8 +35,7 @@ s_coder *init_coder(int nmb, s_sim *sim)
     while (i < nmb)
     {
         coders[i].id = i + 1;
-        coders[i].left_dongle = &sim->dongles[i].mutex;                 
-        coders[i].right_dongle = &sim->dongles[(i + 1) % nmb].mutex;  
+        fill_dongles
         coders[i].compiles_done = 0;
         coders[i].last_compile_start = 0;
         coders[i].sim = sim;
@@ -75,6 +74,7 @@ int init_sim_resources(s_sim *data, s_args *args)
         return -1;
     }
     data->locks_ready = 1;
+    data->all_ready = 0;
     return 0;
 }
  

@@ -7,5 +7,5 @@ void debuge(s_coder *coder)
     pthread_mutex_lock(&coder->sim->print_lock);
     printf("coder %d is debugging\n", coder->id);
     pthread_mutex_unlock(&coder->sim->print_lock);
-    // usleep((coder->sim->time_to_debug * 1000));
+    usleep((coder->sim->time_to_debug * 1000));
 }
