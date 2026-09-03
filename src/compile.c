@@ -1,19 +1,17 @@
 #include "codexion.h"
-void take_single_dongle(s_dongle *dongle,int id)
+
+int take_single_dongle(s_dongle *dongle,int id)
 {
     pthread_mutex_lock(&dongle->mutex);
-    if (!(dongle->is_free) || (dongle->in_cooldown))
+    if (dongle->is_free || (dongle->in_cooldown))
     {
-        
+        return -1;
     }
-    
-    printf("%d %d has taken a dongle\n",get_time(),id);
     pthread_mutex_lock(&dongle->mutex);
 }
 int take_dongles(s_coder *coder)
 {
- 
-  
+
 }
 
 void compile(s_coder *coder)

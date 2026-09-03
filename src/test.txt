@@ -1,0 +1,5 @@
+take single return fail to main
+
+check priority and couldown and the other dongles exsist before taken dongle
+
+heap logic: program start => push coders => to take dongle pop + check priority => compile end push new coders to min heap with new priority

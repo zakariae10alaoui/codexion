@@ -89,7 +89,7 @@ s_args	*parser(char **argv)
 		if (!int_parser(argv[i]))
 			return (NULL);
 		tab[i - 1] = ft_atoi(argv[i]);
-		if (tab[i - 1] == -1)
+		if (tab[i - 1] < 0)
 		{
 			printf("Integer overflow or negative number: %s\n", argv[i]);
 			return (NULL);
