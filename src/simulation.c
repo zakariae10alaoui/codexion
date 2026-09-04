@@ -16,9 +16,16 @@ void *routine(void *arg)
         pthread_mutex_unlock(&coder->sim->sim_lock);
         usleep(100); 
     }
-    compile(coder);
-    debuge(coder);
-    refactor(coder);
+    while (!coder->sim->simulation_ended || coder->sim->number_of_compiles_required != coder->compiles_done)
+    {
+        compile(coder);
+        if (coder->sim->simulation_ended)
+            break;
+        debuge(coder); 
+        if (coder->sim->simulation_ended)
+            break;
+        refactor(coder);   
+    }
     return (NULL);
 }
 

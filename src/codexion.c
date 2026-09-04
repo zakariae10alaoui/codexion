@@ -17,7 +17,7 @@ int main(int argc, char **argv)
         return 1;
     }
     sim = fill_it(args);
-    // simulation(sim);
+    simulation(sim);
     freedom(sim,args);
 
     return 0;

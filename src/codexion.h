@@ -22,11 +22,19 @@ typedef struct args
     char			*scheduler;  
 }s_args;
 
+typedef struct s_queue{
+    int coder_id;
+    long long priorrity;
+    int size;
+}s_queue;
+
 typedef struct s_dongle
 {
-    pthread_mutex_t	mutex;      
+    pthread_mutex_t	mutex;
+    pthread_cond_t  cond;      
     int is_free;   
     int in_cooldown; 
+    s_queue nodes[2];
     long long		last_released;  
 }	s_dongle;
 
@@ -34,10 +42,10 @@ typedef struct s_coder
 {
     int				id;               
     pthread_t		thread;            
-    pthread_mutex_t	*first_dongle;      
-    pthread_mutex_t	*second_dongle;      
+    s_dongle	*first_dongle;      
+    s_dongle	*second_dongle;      
     int				compiles_done;     
-    long long		last_compile_start; 
+    long long		last_compile_time; 
     struct s_sim	*sim;               
 }	s_coder;
 
@@ -76,5 +84,8 @@ long long get_time();
 void *monitor_routine(void *arg);
 void init_start_time(s_sim *data);
 void fill_dongles(s_coder *coder,s_sim *sim);
-
+void print_coder_status(s_coder *coder, char *status);
+void register_in_queue(s_dongle *dongle, s_coder *coder);
+void release_dongles(s_dongle *d1, s_dongle *d2);
+void pop_from_queue(s_dongle *dongle);
 #endif

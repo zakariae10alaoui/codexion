@@ -7,7 +7,7 @@ int check_burnout(s_sim *sim)
     while (i < sim->number_of_coders)
     {
         pthread_mutex_lock(&sim->sim_lock);
-        if (get_time() >= sim->coders[i].last_compile_start + sim->time_to_burnout)
+        if (get_time() >= sim->coders[i].last_compile_time + sim->time_to_burnout)
         {
             printf("%ld %d burned out\n", get_time() - sim->start_time, sim->coders[i].id);
             pthread_mutex_unlock(&sim->sim_lock);
@@ -35,6 +35,19 @@ int all_compile_done(s_sim *sim)
     }
     return 1;
 }
+void wake_em(s_sim *sim)
+{
+    int i;
+    
+     i = 0;
+    while (i < sim->number_of_coders)
+    {
+        pthread_mutex_lock(&sim->dongles[i].mutex);
+        pthread_cond_broadcast(&sim->dongles[i].cond);
+        pthread_mutex_unlock(&sim->dongles[i].mutex);
+        i++;
+    }
+}
 void *monitor_routine(void *arg)
 {
     s_sim *sim = (s_sim *)arg;
@@ -45,7 +58,7 @@ void *monitor_routine(void *arg)
             pthread_mutex_lock(&sim->sim_lock);
             sim->simulation_ended = 1;
             pthread_mutex_unlock(&sim->sim_lock);
-
+            wake_em(sim);
             return NULL;
         }
         if(all_compile_done(sim))
@@ -53,7 +66,7 @@ void *monitor_routine(void *arg)
             pthread_mutex_lock(&sim->sim_lock);
             sim->simulation_ended = 1;
             pthread_mutex_unlock(&sim->sim_lock);
-
+            wake_em(sim);
             return NULL;
         }
         usleep(1000);
