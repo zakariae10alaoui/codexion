@@ -10,6 +10,7 @@ int handle_cooldown(s_dongle *dongle, s_coder *coder)
             }
             else
             {
+                // use cond_timed_wait
                 pthread_mutex_unlock(&dongle->mutex);
                 usleep( (dongle->last_released + coder->sim->dongle_cooldown - get_time() )* 1000); 
                 pthread_mutex_lock(&dongle->mutex);
@@ -54,6 +55,7 @@ int take_single_dongle(s_dongle *dongle,s_coder *coder)
         pthread_cond_wait(&dongle->cond, &dongle->mutex);
     }
     dongle->is_free = 0; 
+    pop_from_queue(dongle);
     pthread_mutex_unlock(&dongle->mutex);
     return 1;
 }
@@ -64,13 +66,11 @@ int take_dongles(s_coder *coder)
         return (0);
         
     print_coder_status(coder, "has taken a dongle");
-    pop_from_queue(coder->first_dongle);
 
     if (!take_single_dongle(coder->second_dongle, coder))
         return (0);
     
     print_coder_status(coder, "has taken a dongle");
-    pop_from_queue(coder->second_dongle);
 
     return (1); 
 }
@@ -79,18 +79,17 @@ void compile(s_coder *coder)
 {
     if (take_dongles(coder))
     {
-         pthread_mutex_lock(&coder->sim->sim_lock);
         if (coder->sim->simulation_ended)
         {
             release_dongles(coder->first_dongle, coder->second_dongle);
             return;
         }
         print_coder_status(coder, "is compiling");
-        coder->last_compile_time = get_time() + coder->sim->time_to_compile;
+        pthread_mutex_lock(&coder->lock);
+        coder->last_compile_time = get_time();
         coder->compiles_done += 1;
-        
-        pthread_mutex_unlock(&coder->sim->sim_lock);
+        pthread_mutex_unlock(&coder->lock);
         usleep(coder->sim->time_to_compile * 1000);
-        release_dongles(coder->first_dongle,coder->second_dongle);
+        release_dongles(coder->first_dongle, coder->second_dongle);
     }
 }

@@ -15,7 +15,7 @@ long long choose_priority(s_coder *coder)
 {
     long long priority;
 
-    pthread_mutex_lock(&coder->sim->sim_lock);
+    // pthread_mutex_lock(&coder->sim->sim_lock);
     
     if (strcmp(coder->sim->scheduler, "edf") == 0)
     {
@@ -26,7 +26,7 @@ long long choose_priority(s_coder *coder)
         priority = get_time();
     }
     
-    pthread_mutex_unlock(&coder->sim->sim_lock);
+    // pthread_mutex_unlock(&coder->sim->sim_lock);
     return priority;
 }
 void swap_coder(s_dongle *dongle)

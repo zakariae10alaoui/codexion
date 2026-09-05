@@ -3,9 +3,6 @@
 
 void debuge(s_coder *coder)
 {
-    coder->last_compile_time = get_time();
-    pthread_mutex_lock(&coder->sim->print_lock);
-    printf("coder %d is debugging\n", coder->id);
-    pthread_mutex_unlock(&coder->sim->print_lock);
+    print_coder_status(coder,"is debugging");
     usleep((coder->sim->time_to_debug * 1000));
 }

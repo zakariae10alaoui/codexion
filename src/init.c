@@ -1,4 +1,6 @@
 #include "codexion.h"
+#include <pthread.h>
+#include <unistd.h>
 
 s_dongle *init_dongle(int nmb)
 {
@@ -18,6 +20,10 @@ s_dongle *init_dongle(int nmb)
         {
             return NULL;
         }
+        if (pthread_cond_init(&dongles[i].cond, NULL) != 0)
+        {
+            return NULL; 
+        }
         i++;
     }
     return dongles;
@@ -35,9 +41,10 @@ s_coder *init_coder(int nmb, s_sim *sim)
     while (i < nmb)
     {
         coders[i].id = i + 1;
+        pthread_mutex_init(&coders[i].lock, NULL);
         fill_dongles(&coders[i],sim);
         coders[i].compiles_done = 0;
-        coders[i].last_compile_start = 0;
+        coders[i].last_compile_time = 0;
         coders[i].sim = sim;
         i++;
     }

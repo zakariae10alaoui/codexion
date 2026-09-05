@@ -17,9 +17,18 @@ void fill_dongles(s_coder *coder, s_sim *sim)
     }
 }
 
+int check_sim(s_coder *coder)
+{
+    int ended;
+
+    pthread_mutex_lock(&coder->sim->sim_lock);
+    ended = coder->sim->simulation_ended;
+    pthread_mutex_unlock(&coder->sim->sim_lock);
+    return ended;
+}
 void print_coder_status(s_coder *coder,char *status)
 {
-    pthread_mutex_lock(&coder->sim->sim_lock);
+    pthread_mutex_lock(&coder->sim->print_lock);
     
     if (!coder->sim->simulation_ended)
     {
@@ -27,7 +36,7 @@ void print_coder_status(s_coder *coder,char *status)
         printf("%lld %d %s\n", timestamp, coder->id, status);
     }
     
-    pthread_mutex_unlock(&coder->sim->sim_lock);
+    pthread_mutex_unlock(&coder->sim->print_lock);
 }
 void release_dongles(s_dongle *d1, s_dongle *d2)
 {

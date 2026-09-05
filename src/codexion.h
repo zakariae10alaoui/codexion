@@ -41,7 +41,8 @@ typedef struct s_dongle
 typedef struct s_coder
 {
     int				id;               
-    pthread_t		thread;            
+    pthread_t		thread;   
+    pthread_mutex_t lock;         
     s_dongle	*first_dongle;      
     s_dongle	*second_dongle;      
     int				compiles_done;     
@@ -88,4 +89,5 @@ void print_coder_status(s_coder *coder, char *status);
 void register_in_queue(s_dongle *dongle, s_coder *coder);
 void release_dongles(s_dongle *d1, s_dongle *d2);
 void pop_from_queue(s_dongle *dongle);
+int check_sim(s_coder *coder);
 #endif

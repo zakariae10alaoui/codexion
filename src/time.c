@@ -20,7 +20,7 @@ void init_start_time(s_sim *data)
     i = 0;
     while (i < data->number_of_coders)
     {
-        data->coders[i].last_compile_start = data->start_time;
+        data->coders[i].last_compile_time = data->start_time;
         i++;
     }
     data->simulation_ended = 0;

@@ -1,4 +1,5 @@
 #include "codexion.h"
+#include <pthread.h>
 
 void free_dongles(s_dongle *dongles, int nmb)
 {
@@ -8,6 +9,7 @@ void free_dongles(s_dongle *dongles, int nmb)
     while (i < nmb)
     {
         pthread_mutex_destroy(&dongles[i].mutex);
+        pthread_cond_destroy(&dongles[i].cond);
         i++;
     }
     free(dongles);
