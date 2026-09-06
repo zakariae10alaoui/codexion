@@ -18,6 +18,13 @@ void *routine(void *arg)
     }
     while (!check_sim(coder))
     {
+        pthread_mutex_lock(&coder->lock);
+        if(coder->compiles_done == coder->sim->number_of_compiles_required)
+        {
+            pthread_mutex_unlock(&coder->lock);
+            break;
+        }
+        pthread_mutex_unlock(&coder->lock);
         compile(coder);
         if (check_sim(coder))
             break;
@@ -25,8 +32,6 @@ void *routine(void *arg)
         if (check_sim(coder))
             break;
         refactor(coder);   
-        // if(coder->compiles_done < coder->sim->number_of_compiles_required)
-        //     break;
     }
     return (NULL);
 }

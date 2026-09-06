@@ -29,13 +29,11 @@ int check_sim(s_coder *coder)
 void print_coder_status(s_coder *coder,char *status)
 {
     pthread_mutex_lock(&coder->sim->print_lock);
-    
     if (!coder->sim->simulation_ended)
     {
         long long timestamp = get_time() - coder->sim->start_time;
         printf("%lld %d %s\n", timestamp, coder->id, status);
     }
-    
     pthread_mutex_unlock(&coder->sim->print_lock);
 }
 void release_dongles(s_dongle *d1, s_dongle *d2)

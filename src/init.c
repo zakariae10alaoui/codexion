@@ -1,6 +1,4 @@
 #include "codexion.h"
-#include <pthread.h>
-#include <unistd.h>
 
 s_dongle *init_dongle(int nmb)
 {
@@ -41,7 +39,10 @@ s_coder *init_coder(int nmb, s_sim *sim)
     while (i < nmb)
     {
         coders[i].id = i + 1;
-        pthread_mutex_init(&coders[i].lock, NULL);
+        if(pthread_mutex_init(&coders[i].lock, NULL) != 0)
+        {
+            return NULL;
+        }
         fill_dongles(&coders[i],sim);
         coders[i].compiles_done = 0;
         coders[i].last_compile_time = 0;

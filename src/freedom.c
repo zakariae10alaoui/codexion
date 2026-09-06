@@ -18,9 +18,16 @@ void free_dongles(s_dongle *dongles, int nmb)
 
 void freedom(s_sim *sim, s_args *args)
 {
+    int i;
 
     free(sim->coders);
     free_dongles(sim->dongles, sim->number_of_coders);
+    i = 0;
+    while (i < sim->number_of_coders)
+    {
+        pthread_mutex_destroy(&sim->coders[i].lock);
+        i++;
+    }
     if (sim->locks_ready) 
     {
         pthread_mutex_destroy(&sim->print_lock);

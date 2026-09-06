@@ -2,21 +2,28 @@
 
 int check_burnout(s_sim *sim)
 {
-    int i;
-    i = 0;
+    int i = 0;
+    
     while (i < sim->number_of_coders)
     {
         pthread_mutex_lock(&sim->coders[i].lock);
-        if (get_time() >= sim->coders[i].last_compile_time + sim->time_to_burnout)
+        
+        if (sim->coders[i].compiles_done < sim->number_of_compiles_required)
         {
-            printf("%lld %d burned out\n", get_time() - sim->start_time, sim->coders[i].id);
-            pthread_mutex_unlock(&sim->coders[i].lock);
-            return 0;
+            if (get_time() >= sim->coders[i].last_compile_time + sim->time_to_burnout)
+            {
+                pthread_mutex_lock(&sim->print_lock);
+                printf("%lld %d burned out\n", get_time() - sim->start_time, sim->coders[i].id);
+                pthread_mutex_unlock(&sim->print_lock);
+                pthread_mutex_unlock(&sim->coders[i].lock);
+                return (0);
+            }
         }
+        
         pthread_mutex_unlock(&sim->coders[i].lock);
-        i++;
+        i++; 
     }
-    return 1;
+    return (1); 
 }
 int all_compile_done(s_sim *sim)
 {
@@ -25,7 +32,6 @@ int all_compile_done(s_sim *sim)
     while (i < sim->number_of_coders)
     {
         pthread_mutex_lock(&sim->coders[i].lock);
-        // simulation ends after coder have compiled AT LEAST number_of_compiles_required times...
         if (sim->coders[i].compiles_done < sim->number_of_compiles_required)
         {
             pthread_mutex_unlock(&sim->coders[i].lock);

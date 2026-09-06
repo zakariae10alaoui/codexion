@@ -1,23 +1,32 @@
 #include "codexion.h"
+
 int handle_cooldown(s_dongle *dongle, s_coder *coder)
 {
-    if (dongle->in_cooldown)
-        {
-            if (get_time() >= dongle->last_released + coder->sim->dongle_cooldown)
-            {
-                dongle->in_cooldown = 0; 
-                return 1;
-            }
-            else
-            {
-                // use cond_timed_wait
-                pthread_mutex_unlock(&dongle->mutex);
-                usleep( (dongle->last_released + coder->sim->dongle_cooldown - get_time() )* 1000); 
-                pthread_mutex_lock(&dongle->mutex);
-                return 0; 
-            }
-        }
-        return 1;
+    struct timespec ts;
+    long long target_time;
+
+    if (!dongle->in_cooldown)
+        return (1);
+    
+    target_time = dongle->last_released + coder->sim->dongle_cooldown;
+    
+    if (get_time() >= target_time)
+    {
+        dongle->in_cooldown = 0; 
+        return (1);
+    }
+
+    ts.tv_sec = target_time / 1000;
+    ts.tv_nsec = (target_time % 1000) * 1000000;
+
+    pthread_cond_timedwait(&dongle->cond, &dongle->mutex, &ts);
+
+    if (get_time() >= target_time)
+    {
+        dongle->in_cooldown = 0;
+    }
+
+    return (0); 
 }
 int sim_done(s_coder *coder, s_dongle *dongle)
 {
@@ -79,17 +88,22 @@ void compile(s_coder *coder)
 {
     if (take_dongles(coder))
     {
+        pthread_mutex_lock(&coder->sim->sim_lock);
         if (coder->sim->simulation_ended)
         {
             release_dongles(coder->first_dongle, coder->second_dongle);
+            pthread_mutex_unlock(&coder->sim->sim_lock);
             return;
         }
+        pthread_mutex_unlock(&coder->sim->sim_lock);
         print_coder_status(coder, "is compiling");
         pthread_mutex_lock(&coder->lock);
         coder->last_compile_time = get_time();
-        coder->compiles_done += 1;
         pthread_mutex_unlock(&coder->lock);
         usleep(coder->sim->time_to_compile * 1000);
+        pthread_mutex_lock(&coder->lock);
+        coder->compiles_done += 1;
+        pthread_mutex_unlock(&coder->lock);
         release_dongles(coder->first_dongle, coder->second_dongle);
     }
 }

@@ -10,12 +10,9 @@ void pop_from_queue(s_dongle *dongle)
 }
 
 
-
 long long choose_priority(s_coder *coder)
 {
     long long priority;
-
-    // pthread_mutex_lock(&coder->sim->sim_lock);
     
     if (strcmp(coder->sim->scheduler, "edf") == 0)
     {
@@ -26,7 +23,6 @@ long long choose_priority(s_coder *coder)
         priority = get_time();
     }
     
-    // pthread_mutex_unlock(&coder->sim->sim_lock);
     return priority;
 }
 void swap_coder(s_dongle *dongle)
@@ -48,6 +44,9 @@ void swap_coder(s_dongle *dongle)
 }
 void register_in_queue(s_dongle *dongle, s_coder *coder)
 {
+    if (dongle->nodes[0].coder_id == coder->id || dongle->nodes[1].coder_id == coder->id)
+        return;
+
     if (dongle->nodes[0].size == 0)
     {
         dongle->nodes[0].coder_id = coder->id;
